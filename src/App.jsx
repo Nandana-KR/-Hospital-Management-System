@@ -2,8 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import LoginPage from './pages/LoginPage'
 import Dashboard from './pages/Dashboard'
+import PatientList from './pages/PatientList'
+import PatientDetail from './pages/PatientDetail'
 
-// Protected route — redirects to login if not authenticated
 function ProtectedRoute({ children }) {
     const { token } = useAuth()
     if (!token) {
@@ -26,7 +27,23 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+                    <Route
+                        path="/patients"
+                        element={
+                            <ProtectedRoute>
+                                <PatientList />
+                            </ProtectedRoute>
+                        }
+                    />
                     <Route path="/" element={<Navigate to="/login" />} />
+                    <Route
+                      path="/patients/:id"
+                      element={
+                          <ProtectedRoute>
+                              <PatientDetail />
+                          </ProtectedRoute>
+                      }
+                  />
                 </Routes>
             </AuthProvider>
         </BrowserRouter>

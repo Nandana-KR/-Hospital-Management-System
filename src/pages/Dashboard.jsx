@@ -24,6 +24,16 @@ function Dashboard() {
                 <p>Role: {user?.role}</p>
                 <p>Email: {user?.email}</p>
             </div>
+
+            <div style={styles.menuGrid}>
+                <div
+                    style={styles.menuCard}
+                    onClick={() => navigate('/patients')}
+                >
+                    <h3>Patients</h3>
+                    <p>View and manage patient records</p>
+                </div>
+            </div>
         </div>
     )
 }
@@ -47,7 +57,21 @@ const styles = {
         backgroundColor: 'white',
         padding: '24px',
         borderRadius: '12px',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.08)'
+        boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
+        marginBottom: '24px'
+    },
+    menuGrid: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '16px'
+    },
+    menuCard: {
+        backgroundColor: 'white',
+        padding: '24px',
+        borderRadius: '12px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
+        cursor: 'pointer',
+        border: '2px solid transparent'
     },
     logoutBtn: {
         padding: '8px 16px',
