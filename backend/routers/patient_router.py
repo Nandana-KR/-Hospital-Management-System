@@ -1,17 +1,58 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from typing import List
 
 from database import get_db
 from models.patient import Patient
 from schemas.patient_schema import PatientCreate, PatientUpdate, PatientResponse
 from dependencies import get_current_user, require_role
 from models.user import User
-from typing import List
 
 router = APIRouter(
     prefix="/api/v1/patients",
     tags=["patients"]
 )
+
+
+# Count route MUST be before /{patient_id}
+# Otherwise FastAPI treats "count" as a patient ID
+@router.get("/count")
+def get_patient_count(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    count = db.query(Patient).count()
+    return {"total": count}
+
+
+# Get all patients with pagination and sorting
+@router.get(
+    "/",
+    response_model=List[PatientResponse]
+)
+def get_all_patients(
+    skip: int = 0,
+    limit: int = 10,
+    sort_by: str = "full_name",
+    order: str = "asc",
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    query = db.query(Patient)
+
+    if sort_by == "full_name":
+        if order == "asc":
+            query = query.order_by(Patient.full_name.asc())
+        else:
+            query = query.order_by(Patient.full_name.desc())
+    elif sort_by == "created_at":
+        if order == "asc":
+            query = query.order_by(Patient.created_at.asc())
+        else:
+            query = query.order_by(Patient.created_at.desc())
+
+    patients = query.offset(skip).limit(limit).all()
+    return patients
 
 
 # Register a new patient
@@ -33,61 +74,28 @@ def register_patient(
     return new_patient
 
 
-# Get all patients
-# Only doctors and admins can view patient list
-@router.get(
-    "/",
-    response_model=List[PatientResponse]
-)
-def get_all_patients(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    patients = db.query(Patient).all()
-    return patients
-
-
 # Get one patient by ID
+# This must come AFTER /count and /
 @router.get(
-    "/",
-    response_model=List[PatientResponse]
+    "/{patient_id}",
+    response_model=PatientResponse
 )
-def get_all_patients(
-    skip: int = 0,
-    limit: int = 10,
-    sort_by: str = "full_name",
-    order: str = "asc",
+def get_patient(
+    patient_id: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    # Build the query
-    query = db.query(Patient)
+    patient = db.query(Patient).filter(
+        Patient.id == patient_id
+    ).first()
 
-    # Apply sorting
-    if sort_by == "full_name":
-        if order == "asc":
-            query = query.order_by(Patient.full_name.asc())
-        else:
-            query = query.order_by(Patient.full_name.desc())
-    elif sort_by == "created_at":
-        if order == "asc":
-            query = query.order_by(Patient.created_at.asc())
-        else:
-            query = query.order_by(Patient.created_at.desc())
+    if not patient:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Patient not found"
+        )
 
-    # Apply pagination
-    patients = query.offset(skip).limit(limit).all()
-    return patients
-
-@router.get("/count")
-def get_patient_count(
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
-):
-    count = db.query(Patient).count()
-    return {"total": count}
-
-
+    return patient
 
 
 # Update patient details
