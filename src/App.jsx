@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import Layout from './components/Layout'
 import LoginPage from './pages/LoginPage'
 import Dashboard from './pages/Dashboard'
 import PatientList from './pages/PatientList'
@@ -7,12 +8,13 @@ import PatientDetail from './pages/PatientDetail'
 import DiagnosisForm from './pages/DiagnosisForm'
 import PrognosisPage from './pages/PrognosisPage'
 
+
 function ProtectedRoute({ children }) {
     const { token } = useAuth()
     if (!token) {
         return <Navigate to="/login" />
     }
-    return children
+    return <Layout>{children}</Layout>
 }
 
 function App() {
@@ -20,7 +22,10 @@ function App() {
         <BrowserRouter>
             <AuthProvider>
                 <Routes>
-                    <Route path="/login" element={<LoginPage />} />
+                    <Route
+                        path="/login"
+                        element={<LoginPage />}
+                    />
                     <Route
                         path="/dashboard"
                         element={
@@ -37,31 +42,34 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-                    <Route path="/" element={<Navigate to="/login" />} />
                     <Route
-                      path="/patients/:id"
-                      element={
-                          <ProtectedRoute>
-                              <PatientDetail />
-                          </ProtectedRoute>
-                      }
-                  />
-                  <Route
-                    path="/patients/:patientId/diagnosis/new"
-                    element={
-                        <ProtectedRoute>
-                            <DiagnosisForm />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/prognosis/:diagnosisId"
-                    element={
-                        <ProtectedRoute>
-                        <PrognosisPage />
-                    </ProtectedRoute>
-                    }
-                />
+                        path="/patients/:id"
+                        element={
+                            <ProtectedRoute>
+                                <PatientDetail />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/patients/:patientId/diagnosis/new"
+                        element={
+                            <ProtectedRoute>
+                                <DiagnosisForm />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/prognosis/:diagnosisId"
+                        element={
+                            <ProtectedRoute>
+                                <PrognosisPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/"
+                        element={<Navigate to="/login" />}
+                    />
                 </Routes>
             </AuthProvider>
         </BrowserRouter>

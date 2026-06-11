@@ -2,37 +2,71 @@ import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 
 function Dashboard() {
-    const { user, logout } = useAuth()
+    const { user } = useAuth()
     const navigate = useNavigate()
 
-    const handleLogout = () => {
-        logout()
-        navigate('/login')
-    }
+    const menuItems = [
+        {
+            title: 'Patients',
+            description: 'View and manage patient records',
+            path: '/patients',
+            roles: ['admin', 'doctor', 'receptionist'],
+            color: '#3182ce'
+        },
+        {
+            title: 'Appointments',
+            description: 'Book and manage appointments',
+            path: '/appointments',
+            roles: ['admin', 'doctor', 'receptionist'],
+            color: '#38a169'
+        },
+        {
+            title: 'Register Patient',
+            description: 'Add a new patient to the system',
+            path: '/patients/new',
+            roles: ['admin', 'receptionist'],
+            color: '#805ad5'
+        }
+    ]
+
+    const allowedItems = menuItems.filter(
+        item => item.roles.includes(user?.role)
+    )
 
     return (
         <div style={styles.container}>
-            <div style={styles.header}>
-                <h1 style={styles.title}>Dashboard</h1>
-                <button onClick={handleLogout} style={styles.logoutBtn}>
-                    Logout
-                </button>
-            </div>
-
             <div style={styles.welcomeCard}>
-                <h2>Welcome, {user?.full_name}</h2>
-                <p>Role: {user?.role}</p>
-                <p>Email: {user?.email}</p>
+                <h2 style={styles.welcome}>
+                    Welcome back, {user?.full_name}
+                </h2>
+                <p style={styles.roleText}>
+                    Logged in as {user?.role}
+                </p>
             </div>
 
-            <div style={styles.menuGrid}>
-                <div
-                    style={styles.menuCard}
-                    onClick={() => navigate('/patients')}
-                >
-                    <h3>Patients</h3>
-                    <p>View and manage patient records</p>
-                </div>
+            <h3 style={styles.sectionTitle}>Quick Access</h3>
+
+            <div style={styles.grid}>
+                {allowedItems.map(item => (
+                    <div
+                        key={item.path}
+                        style={{
+                            ...styles.card,
+                            borderTop: `4px solid ${item.color}`
+                        }}
+                        onClick={() => navigate(item.path)}
+                    >
+                        <h3 style={{
+                            ...styles.cardTitle,
+                            color: item.color
+                        }}>
+                            {item.title}
+                        </h3>
+                        <p style={styles.cardDesc}>
+                            {item.description}
+                        </p>
+                    </div>
+                ))}
             </div>
         </div>
     )
@@ -40,18 +74,8 @@ function Dashboard() {
 
 const styles = {
     container: {
-        padding: '24px',
-        maxWidth: '1200px',
+        maxWidth: '1000px',
         margin: '0 auto'
-    },
-    header: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '24px'
-    },
-    title: {
-        color: '#1a365d'
     },
     welcomeCard: {
         backgroundColor: 'white',
@@ -60,26 +84,40 @@ const styles = {
         boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
         marginBottom: '24px'
     },
-    menuGrid: {
+    welcome: {
+        color: '#1a365d',
+        margin: '0 0 4px 0'
+    },
+    roleText: {
+        color: '#718096',
+        margin: 0,
+        textTransform: 'capitalize'
+    },
+    sectionTitle: {
+        color: '#4a5568',
+        marginBottom: '16px'
+    },
+    grid: {
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 1fr)',
         gap: '16px'
     },
-    menuCard: {
+    card: {
         backgroundColor: 'white',
         padding: '24px',
         borderRadius: '12px',
         boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
         cursor: 'pointer',
-        border: '2px solid transparent'
+        transition: 'transform 0.1s'
     },
-    logoutBtn: {
-        padding: '8px 16px',
-        backgroundColor: '#e53e3e',
-        color: 'white',
-        border: 'none',
-        borderRadius: '6px',
-        cursor: 'pointer'
+    cardTitle: {
+        margin: '0 0 8px 0',
+        fontSize: '18px'
+    },
+    cardDesc: {
+        color: '#718096',
+        margin: 0,
+        fontSize: '14px'
     }
 }
 
