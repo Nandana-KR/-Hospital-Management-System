@@ -9,7 +9,7 @@ from routers import user_router
 # If User is never imported, SQLAlchemy doesn't know it exists
 # and the users table never gets created
 from models import user
-
+from fastapi.middleware.cors import CORSMiddleware
 from routers import user_router, auth_router,patient_router,appointment_router,diagnosis_router,prognosis_router
 from dependencies import get_current_user
 from models.user import User
@@ -25,6 +25,15 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title="Hospital Management System API",
     version="1.0.0"
+)
+
+# Add this CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 # Register the user router with the app
 app.include_router(user_router.router)
