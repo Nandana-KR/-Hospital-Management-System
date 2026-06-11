@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard'
 import PatientList from './pages/PatientList'
 import PatientDetail from './pages/PatientDetail'
 import DiagnosisForm from './pages/DiagnosisForm'
+import PrognosisPage from './pages/PrognosisPage'
 
 function ProtectedRoute({ children }) {
     const { token } = useAuth()
@@ -51,6 +52,14 @@ function App() {
                         <ProtectedRoute>
                             <DiagnosisForm />
                         </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/prognosis/:diagnosisId"
+                    element={
+                        <ProtectedRoute>
+                        <PrognosisPage />
+                    </ProtectedRoute>
                     }
                 />
                 </Routes>
