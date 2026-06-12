@@ -28,13 +28,10 @@ app = FastAPI(
 )
 
 # Add this CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+allow_origins=[
+        "http://localhost:5173",
+        "https://your-project-name.vercel.app"
+    ],
 # Register the user router with the app
 app.include_router(user_router.router)
 app.include_router(auth_router.router)
