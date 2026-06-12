@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // Base URL of your FastAPI backend
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8000',
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
 })
 
 // This runs before every request
