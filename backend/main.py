@@ -20,7 +20,7 @@ from models.user import User
 # But this line also TESTS the connection
 # If your .env or docker-compose has a typo, this crashes here
 # with a clear error rather than silently failing later
-Base.metadata.create_all(bind=engine)
+
 
 app = FastAPI(
     title="Hospital Management System API",
