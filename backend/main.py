@@ -64,17 +64,6 @@ def test_db_connection(db: Session = Depends(get_db)):
 
 
 # This route is protected — you must send a valid token to access it
-#@app.get("/me")
-#def get_my_profile(current_user: User = Depends(get_current_user)):
-    #return {
-        #"id": str(current_user.id),
-        #"email": current_user.email,
-        #"full_name": current_user.full_name,
-        #"role": current_user.role,
-        #"is_active": current_user.is_active,
-        #"department_id": str(current_user.department_id) if current_user.department_id else None,
-        #"department_name": current_user.department.name if current_user.department else None
-    #}
 @app.get("/me")
 def get_my_profile(current_user: User = Depends(get_current_user)):
     return build_user_response(current_user)

@@ -69,6 +69,11 @@ function Sidebar() {
                     <span style={styles.userRole}>
                         {user?.role}
                     </span>
+                    {user?.department_name && (
+                        <span style={styles.userDept}>
+                            {user.department_name}
+                        </span>
+                    )}
                 </div>
             </div>
 
@@ -246,6 +251,11 @@ const styles = {
         fontSize: '14px',
         fontWeight: '500',
         width: '100%'
+    },
+    userDept: {
+    color: '#bee3f8',
+    fontSize: '10px',
+    fontStyle: 'italic'
     }
 }
 
